@@ -1,0 +1,17 @@
+name: PvPBox
+version: 1.0
+main: net.neferett.linaris.pvpbox.Main
+depend: [BukkitAPI]
+commands:
+  kit:
+  kits:
+  money:
+  level:
+  spawn:
+  classement:
+  ec:
+  enderchest:
+  back:
+  pay:
+  craft:
+  givekits:
