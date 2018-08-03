@@ -5,6 +5,6 @@
 	<classpathentry kind="lib" path="C:/Users/Neferett/LB/Holograms-2.4.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Neferett/LB/ProtocolLib.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Neferett/LB/spigot.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Neferett/Desktop/Linaris/Bukkit/target/linaris-gameserver.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Neferett/Documents/GitHub/API/target/linaris-gameserver.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

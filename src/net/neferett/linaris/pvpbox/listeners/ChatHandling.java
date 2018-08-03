@@ -8,7 +8,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import net.neferett.linaris.BukkitAPI;
 import net.neferett.linaris.api.PlayerData;
-import net.neferett.linaris.pvpbox.events.players.PlayerManagers;
+import net.neferett.linaris.pvpbox.players.PlayerManagers;
 
 public class ChatHandling extends PlayerManagers implements Listener {
 

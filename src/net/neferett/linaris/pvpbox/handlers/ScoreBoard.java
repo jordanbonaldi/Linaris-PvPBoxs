@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import net.neferett.linaris.BukkitAPI;
 import net.neferett.linaris.api.GameServer;
 import net.neferett.linaris.api.PlayerData;
-import net.neferett.linaris.pvpbox.events.players.PlayerActions;
-import net.neferett.linaris.pvpbox.events.players.PlayerManagers;
+import net.neferett.linaris.pvpbox.players.M_Player;
+import net.neferett.linaris.pvpbox.players.PlayerManagers;
 import net.neferett.linaris.pvpbox.utils.RainbowEffect;
 import net.neferett.linaris.utils.ScoreBoardModule;
 import net.neferett.linaris.utils.ScoreboardSign;
@@ -22,7 +22,7 @@ public class ScoreBoard extends ScoreBoardModule {
 	public ScoreBoard(final BukkitAPI game) {
 		super(game);
 
-		this.NAME = new RainbowEffect("LINARIS", "§f§l", "§6§l", 40);
+		this.NAME = new RainbowEffect("UniverSeven", "§f§l", "§e§l", 40);
 
 	}
 
@@ -58,29 +58,29 @@ public class ScoreBoard extends ScoreBoardModule {
 
 		final PlayerData data = BukkitAPI.get().getPlayerDataManager().getPlayerData(p.getName());
 
-		final PlayerActions pa = new PlayerManagers().getPlayer(p);
+		final M_Player pa = PlayerManagers.get().getPlayer(p);
 		bar.setObjectiveName(this.title);
-		lines.put(13, "§8● §7§lGrade§f§l:");
-		lines.put(12, "    §b➜" + (data.getRank().getColor() == '7' ? "§f§l" : "§" + data.getRank().getColor() + "§l")
-				+ " " + data.getRank().getName());
-		lines.put(11, "§d");
+		lines.put(14, "§e");
+		lines.put(13, "§fRang:" + (data.getRank().getColor() == '7' ? "§7" : "§" + data.getRank().getColor()) + " "
+				+ data.getRank().getName());
+		lines.put(12, "§4");
 		final float ratio = pa.getDeaths() <= 0 ? pa.getKills() : pa.getKills() / (float) pa.getDeaths();
 		if (ConfigReader.getInstance().isMoney()) {
-			lines.put(10, "§8●§e§l Monnaie§f§l:");
-			lines.put(9, "    §b➜§f§l " + pa.getMoney() + "$");
-		} else {
-			lines.put(10, "§8●§e§l Ratio§f§l:");
-			lines.put(9, "    §b➜§f§l " + (pa.getDeaths() <= 0 ? pa.getKills() == 0 ? "§cN/A" : pa.getKills()
+			lines.put(11, "§fMonnaie: §e" + pa.getMoney() + "$");
+			lines.put(10, "§3");
+			lines.put(9, "§fRatio§f: §e" + (pa.getDeaths() <= 0 ? pa.getKills() == 0 ? "§cN/A" : pa.getKills()
 					: new DecimalFormat("####.##").format(ratio)));
-		}
-		lines.put(8, "§8●§a§l Kills§f§l:");
-		lines.put(7, "    §b➜§f§l " + (pa.getKills() == 0 ? "§c§lAucun" : pa.getKills()));
-		lines.put(6, "§8● §c§lClassement§f§l:");
-		lines.put(5, "    §b➜§f§l " + Classement.getInstance().getPlayerClassement(p) + "e");
-		lines.put(4, "§8● §6§lLevel§f§l:");
-		lines.put(3, "    §b➜§f§l " + pa.getLevel());
+		} else
+			lines.put(9, "§fRatio§f: §e" + (pa.getDeaths() <= 0 ? pa.getKills() == 0 ? "§cN/A" : pa.getKills()
+					: new DecimalFormat("####.##").format(ratio)));
+		lines.put(8, "§d");
+		lines.put(7, "§fKills§f: §c" + (pa.getKills() == 0 ? "§cAucun" : pa.getKills()));
+		lines.put(6, "§2");
+		lines.put(5, "§fClassement§f: §a" + Classement.getInstance().getPlayerClassement(p) + "e");
+		lines.put(4, "§1");
+		lines.put(3, "§fLevel§f: §b" + pa.getLevel());
 		lines.put(2, "§f");
-		lines.put(1, "§e► play.linaris.fr");
+		lines.put(1, "§e► play.universeven.fr");
 
 		if (lines.isEmpty())
 			return;

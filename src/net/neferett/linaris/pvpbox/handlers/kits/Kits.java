@@ -8,21 +8,22 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.neferett.linaris.api.Rank;
+import net.neferett.linaris.api.ranks.RankManager;
 import net.neferett.linaris.pvpbox.handlers.ConfigReader;
 import net.neferett.linaris.utils.ItemBuilder;
 
 public class Kits {
 
-	protected String 			name;
-	protected String			rank;
-	protected int				price;
 	protected long				cooldown;
+	protected List<ItemStack>	items	= new ArrayList<>();
 	protected ItemBuilder		kitdisp;
+	protected String			name;
+	protected int				price;
+	protected String			rank;
 	protected int				slot;
-	protected List<ItemStack>	items = new ArrayList<>();
-	
-	public Kits(String name, int slot, ItemBuilder kitdisplay, int price, String rank, long cooldown, ItemStack... items){
+
+	public Kits(final String name, final int slot, final ItemBuilder kitdisplay, final int price, final String rank,
+			final long cooldown, final ItemStack... items) {
 		this.name = name;
 		this.rank = rank;
 		this.price = price;
@@ -31,51 +32,59 @@ public class Kits {
 		this.kitdisp = kitdisplay;
 		this.items = Arrays.asList(items);
 	}
-	
+
 	public long getCooldown() {
-		return cooldown;
+		return this.cooldown;
 	}
-	
-	public int getSlot() {
-		return slot;
+
+	public List<ItemStack> getItems() {
+		return this.items;
 	}
-	
+
 	public ItemStack getKitdisp() {
-		kitdisp.clear();
-		kitdisp.setTitle(name);
-		kitdisp.addLores("", "§7Prix§f: §e" + (getPrice() == 0 ? "§cGratuit" : (getPrice() + "$")), "");
-		if (!getRank().equals("none"))
-			kitdisp.addLores("§7Grade§f: " + "§" + Rank.get(getRank()).getColor() + getRank(), "");
-		kitdisp.addLores("§bClique droit pour voir le kit !", "§aClique gauche pour acheter !");
-		return kitdisp.build();
+		this.kitdisp.clear();
+		this.kitdisp.setTitle(this.name);
+		this.kitdisp.addLores("", "§7Prix§f: §e" + (this.getPrice() == 0 ? "§cGratuit" : this.getPrice() + "$"), "");
+		if (!this.getRank().equals("none"))
+			this.kitdisp.addLores(
+					"§7Grade§f: " + "§" + RankManager.getInstance().getRank(this.getRank()).getColor() + this.getRank(),
+					"");
+		this.kitdisp.addLores("§bClique droit pour voir le kit !", "§aClique gauche pour acheter !");
+		return this.kitdisp.build();
 	}
-	
-	public void giveKits(Player p){
-		getItems().forEach(item -> {
+
+	public String getName() {
+		return this.name;
+	}
+
+	public int getPrice() {
+		return this.price;
+	}
+
+	public String getRank() {
+		return this.rank;
+	}
+
+	public int getSlot() {
+		return this.slot;
+	}
+
+	public void giveKits(final Player p) {
+		this.getItems().forEach(item -> {
 			if (item != null && item.getType() != null)
-				if (ConfigReader.getInstance().getGameName().contains("Cheat") && item.getType().equals(Material.GOLDEN_APPLE)){
+				if (ConfigReader.getInstance().getGameName().contains("Cheat")
+						&& item.getType().equals(Material.GOLDEN_APPLE)) {
 					item.setDurability((short) 1);
 					p.getInventory().addItem(item);
-				}
-				else
+				} else if (ConfigReader.getInstance().isDefault()) {
+					p.getInventory().setHelmet(new ItemStack(Material.GOLD_HELMET));
+					p.getInventory().setChestplate(new ItemStack(Material.CHAINMAIL_CHESTPLATE));
+					p.getInventory().setLeggings(new ItemStack(Material.CHAINMAIL_LEGGINGS));
+					p.getInventory().setBoots(new ItemStack(Material.GOLD_BOOTS));
+					p.getInventory().addItem(item);
+				} else
 					p.getInventory().addItem(item);
 		});
 	}
-	
-	public int getPrice() {
-		return price;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public String getRank() {
-		return rank;
-	}
-	
-	public List<ItemStack> getItems() {
-		return items;
-	}
-	
+
 }

@@ -1,14 +1,16 @@
 package net.neferett.linaris.pvpbox.handlers;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
 import net.neferett.linaris.BukkitAPI;
-import net.neferett.linaris.pvpbox.events.players.PlayerManagers;
+import net.neferett.linaris.pvpbox.players.M_Player;
+import net.neferett.linaris.pvpbox.players.PlayerManagers;
 
-public class Classement extends PlayerManagers {
+public class Classement {
 
 	public static Classement instance;
 
@@ -16,7 +18,7 @@ public class Classement extends PlayerManagers {
 		return instance == null ? new Classement() : instance;
 	}
 
-	HashMap<Player, Integer>	classement	= new HashMap<>();
+	HashMap<M_Player, Integer>	classement	= new HashMap<>();
 
 	int							i			= 0;
 
@@ -26,10 +28,10 @@ public class Classement extends PlayerManagers {
 
 	public int CalcClassement() {
 		this.i = 0;
-		this.ConvertAllPlayer().stream().sorted((pa1, pa2) -> pa2.getKills() - pa1.getKills())
+		PlayerManagers.get().getPlayers().stream().sorted((pa1, pa2) -> pa2.getKills() - pa1.getKills())
 				.collect(Collectors.toList()).forEach((pa) -> {
 					++this.i;
-					this.classement.put(pa.getPlayer(), this.i);
+					this.classement.put(pa, this.i);
 				});
 		return this.i;
 	}
@@ -37,7 +39,7 @@ public class Classement extends PlayerManagers {
 	public void getClassement(final Player p) {
 		this.i = 0;
 		p.sendMessage("§b§m===================================");
-		this.ConvertAllPlayer().stream().sorted((pa1, pa2) -> pa2.getKills() - pa1.getKills())
+		PlayerManagers.get().getPlayers().stream().sorted((pa1, pa2) -> pa2.getKills() - pa1.getKills())
 				.filter(pa -> !pa.getPlayerData().contains("invisible") || !pa.getPlayerData().getBoolean("invisible"))
 				.collect(Collectors.toList()).forEach((pa) -> {
 					p.sendMessage("§e" + ++this.i + "§b. §7"
@@ -49,9 +51,43 @@ public class Classement extends PlayerManagers {
 		p.sendMessage("§b§m===================================");
 	}
 
+	public M_Player getMPlayerClassement(final int nb) {
+		this.CalcClassement();
+		final Entry<M_Player, Integer> e = this.classement.entrySet().stream().filter(ed -> ed.getValue() == nb)
+				.findFirst().orElse(null);
+		if (e == null)
+			return null;
+		return e.getKey();
+	}
+
 	public int getPlayerClassement(final Player p) {
 		this.CalcClassement();
-		return this.classement.get(p);
+		return this.classement.get(PlayerManagers.get().getPlayer(p));
 	}
+
+	// public void SignClassement() {
+	// ConfigReader.getInstance().SignClassementCuboid().forEach(b -> {
+	// if (b.getType().equals(Material.WALL_SIGN)) {
+	// final Sign s = (Sign) b.getState();
+	// if (s.getLine(0).startsWith("#")) {
+	// final int nb = s.getLine(0).charAt(1) - 48;
+	// final M_Player p = this.getMPlayerClassement(nb);
+	// if (p == null) {
+	// s.setLine(0, "#" + nb);
+	// s.setLine(1, "§c§lAucun joueur");
+	// s.setLine(2, "");
+	// s.setLine(3, "");
+	// s.update();
+	// return;
+	// }
+	// s.setLine(0, "#" + nb + " | " + p.getName());
+	// s.setLine(1, "§b§nGrade:");
+	// s.setLine(2, "§9" + p.getRank().getName());
+	// s.setLine(3, "§c§l" + p.getKills() + " Kills");
+	// s.update();
+	// }
+	// }
+	// });
+	// }
 
 }

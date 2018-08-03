@@ -6,11 +6,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.neferett.linaris.pvpbox.events.players.PlayerActions;
-import net.neferett.linaris.pvpbox.events.players.PlayerManagers;
 import net.neferett.linaris.pvpbox.handlers.ConfigReader;
+import net.neferett.linaris.pvpbox.players.M_Player;
+import net.neferett.linaris.pvpbox.players.PlayerManagers;
 
-public class PayCommand extends PlayerManagers implements CommandExecutor {
+public class PayCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(final CommandSender arg0, final Command arg1, final String arg2, final String[] arg3) {
@@ -27,31 +27,23 @@ public class PayCommand extends PlayerManagers implements CommandExecutor {
 			arg0.sendMessage("§cLe joueur " + arg3[1] + " n'existe pas !");
 			return false;
 		}
-		if (arg1.getLabel().equalsIgnoreCase("pay"))
-			this.ActionOnPlayer(new PlayerActions(Bukkit.getPlayer(arg0.getName())) {
+		if (arg1.getLabel().equalsIgnoreCase("pay")) {
+			final M_Player p = PlayerManagers.get().getPlayer(Bukkit.getPlayer(arg0.getName()));
+			final int montant = Integer.parseInt(arg3[1]);
+			if (p.getMoney() - montant >= 0) {
+				p.delMoney(montant, false);
+				arg0.sendMessage("§7Paiement de §e" + montant + "$ §7envoyé a §e" + arg3[0]);
+				final M_Player receiver = PlayerManagers.get().getPlayer(Bukkit.getPlayer(arg3[0]));
 
-				@Override
-				public void Actions() {
-					final int montant = Integer.parseInt(arg3[1]);
-					if (this.getMoney() - montant >= 0) {
-						this.delMoney(montant);
-						arg0.sendMessage("§7Paiement de §e" + montant + "$ §7envoyé a §e" + arg3[0]);
-						new PlayerManagers().ActionOnPlayer(new PlayerActions(Bukkit.getPlayer(arg3[0])) {
+				receiver.sendMessage("§7Vous venez de recevoir §e" + Integer.parseInt(arg3[1]) + "$§7 de la part de §e"
+						+ arg0.getName());
+				receiver.addMoney(Integer.parseInt(arg3[1]), false);
 
-							@Override
-							public void Actions() {
-								this.getPlayer().sendMessage("§7Vous venez de recevoir §e" + Integer.parseInt(arg3[1])
-										+ "$§7 de la part de §e" + arg0.getName());
-								this.addMoney(Integer.parseInt(arg3[1]));
-							}
-						});
-					} else {
-						arg0.sendMessage(
-								"§cIl vous manque §e" + (montant - this.getMoney()) + "$§c pour faire ce paiement !");
-						return;
-					}
-				}
-			});
+			} else {
+				arg0.sendMessage("§cIl vous manque §e" + (montant - p.getMoney()) + "$§c pour faire ce paiement !");
+				return false;
+			}
+		}
 		return false;
 	}
 

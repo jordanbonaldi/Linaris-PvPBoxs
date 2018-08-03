@@ -1,29 +1,34 @@
 package net.neferett.linaris.pvpbox.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import java.util.List;
 
+import net.neferett.linaris.PlayersHandler.Players;
+import net.neferett.linaris.commands.CommandHandler;
 import net.neferett.linaris.pvpbox.handlers.ConfigReader;
 import net.neferett.linaris.pvpbox.handlers.kits.GuiKits;
 import net.neferett.linaris.pvpbox.listeners.CancelledEvents;
 import net.neferett.linaris.pvpbox.utils.GuiManager;
 
-public class KitsCommand implements CommandExecutor{
+public class KitsCommand extends CommandHandler {
+
+	public KitsCommand() {
+		super("kit", p -> p != null);
+	}
 
 	@Override
-	public boolean onCommand(CommandSender arg0, Command arg1, String arg2, String[] arg3) {
-		if (!(arg0 instanceof Player))
-			return (false);
-		if (arg1.getLabel().equalsIgnoreCase("kits") || arg1.getLabel().equalsIgnoreCase("kit")){
-			Player p = (Player) arg0;
-			if ((!ConfigReader.getInstance().getKitOutside() && CancelledEvents.cb.isInside(p.getLocation())) || ConfigReader.getInstance().getKitOutside())
-				GuiManager.openGui(new GuiKits(p));
-			else
-				p.sendMessage("§cIl faut etre au spawn !");
-		}
-		return false;
+	public void cmd(final Players arg0, final String arg1, final List<String> arg2) {
+
+		if (!ConfigReader.getInstance().getKitOutside() && CancelledEvents.cb.isInside(arg0.getLocation())
+				|| ConfigReader.getInstance().getKitOutside())
+			GuiManager.openGui(new GuiKits(arg0.getPlayer()));
+		else
+			arg0.sendMessage("§cIl faut etre au spawn !");
+	}
+
+	@Override
+	public void onError(final Players arg0) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

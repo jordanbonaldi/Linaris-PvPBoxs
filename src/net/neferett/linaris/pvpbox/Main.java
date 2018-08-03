@@ -1,5 +1,6 @@
 package net.neferett.linaris.pvpbox;
 
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -16,7 +17,7 @@ import net.neferett.linaris.pvpbox.commands.GiveKits;
 import net.neferett.linaris.pvpbox.commands.KitsCommand;
 import net.neferett.linaris.pvpbox.commands.LevelCommand;
 import net.neferett.linaris.pvpbox.commands.MoneyManagement;
-import net.neferett.linaris.pvpbox.commands.PayCommand;
+import net.neferett.linaris.pvpbox.commands.ResetCommand;
 import net.neferett.linaris.pvpbox.commands.SpawnCommand;
 import net.neferett.linaris.pvpbox.commands.TPA.TPA;
 import net.neferett.linaris.pvpbox.commands.TPA.TPAccept;
@@ -35,6 +36,8 @@ import net.neferett.linaris.pvpbox.listeners.events.DeathEvents;
 import net.neferett.linaris.pvpbox.listeners.events.InteractListener;
 import net.neferett.linaris.pvpbox.listeners.events.JoinAndLeave;
 import net.neferett.linaris.pvpbox.listeners.events.MoveListener;
+import net.neferett.linaris.pvpbox.listeners.events.SignListener;
+import net.neferett.linaris.pvpbox.players.PlayerManagers;
 import net.neferett.linaris.utils.TimeUtils;
 
 public class Main extends API {
@@ -45,7 +48,9 @@ public class Main extends API {
 		return instanceMain;
 	}
 
-	protected HologramManager hologramManager;
+	protected HologramManager	hologramManager;
+
+	PlayerManagers				pm;
 
 	public Main() {
 		super(ConfigReader.getInstance().getGameName(), "Default", 100);
@@ -59,12 +64,18 @@ public class Main extends API {
 		return this.hologramManager;
 	}
 
+	public PlayerManagers getPm() {
+		return this.pm;
+	}
+
 	private void loadPredicateProcessors() {
 		BukkitAPI.get().addProcessPredicate(e -> {
 			final Player p = e.getPlayer();
 			if (DamageEvent.time.containsKey(p) && TimeUtils.CreateTestCoolDown(15).test(DamageEvent.time.get(p))) {
 				p.sendMessage("§cVous êtes en combat vous ne pouvez pas faire cela !");
+				e.setMessage("");
 				e.setCancelled(true);
+				return false;
 			}
 			return true;
 		});
@@ -83,10 +94,16 @@ public class Main extends API {
 
 	@Override
 	public void onOpen() {
+		this.pm = new PlayerManagers();
 		this.hologramManager = JavaPlugin.getPlugin(HologramPlugin.class).getHologramManager();
 
 		this.openServer();
 		this.handleWorld();
+
+		this.w.getEntities().forEach(e -> {
+			if (!(e instanceof ItemFrame))
+				e.remove();
+		});
 
 		this.loadPredicateProcessors();
 
@@ -96,8 +113,12 @@ public class Main extends API {
 			this.RegisterAllEvents(new ChestListener());
 		this.RegisterAllEvents(new JoinAndLeave(), new CancelledEvents(), new ChatHandling(), new InteractListener(),
 				new DeathEvents(), new MoveListener(), new AutoLapis(), new DamageEvent(), new AnvilBreak(),
-				new AntiCrop());
+				new AntiCrop(), new SignListener());
 		this.setAPIMode(true);
+		// TaskManager.scheduleSyncRepeatingTask("Classement", () -> {
+		// if (Bukkit.getOnlinePlayers().size() >= 1)
+		// Classement.getInstance().SignClassement();
+		// }, 0, 6 * 20);
 		this.setAnnounce();
 		this.addHealthNameTag();
 	}
@@ -108,18 +129,18 @@ public class Main extends API {
 		new TPA();
 		new TPAccept();
 		new TPAdeny();
-		this.getCommand("kit").setExecutor(new KitsCommand());
-		this.getCommand("kits").setExecutor(new KitsCommand());
-		this.getCommand("givekits").setExecutor(new GiveKits());
+		new SpawnCommand();
+		if (!ConfigReader.getInstance().isDefault()) {
+			new KitsCommand();
+			this.getCommand("givekits").setExecutor(new GiveKits());
+			new Back();
+		}
 		this.getCommand("money").setExecutor(new MoneyManagement());
 		this.getCommand("level").setExecutor(new LevelCommand());
-		this.getCommand("spawn").setExecutor(new SpawnCommand());
-		this.getCommand("spawn").setExecutor(new SpawnCommand());
-		this.getCommand("ec").setExecutor(new EnderChest());
-		this.getCommand("enderchest").setExecutor(new EnderChest());
-		this.getCommand("back").setExecutor(new Back());
+		new ResetCommand();
+		new EnderChest();
 		this.getCommand("craft").setExecutor(new CraftCommand());
-		this.getCommand("pay").setExecutor(new PayCommand());
+		// this.getCommand("pay").setExecutor(new PayCommand());
 		this.getCommand("classement").setExecutor(new net.neferett.linaris.pvpbox.commands.Classement());
 	}
 

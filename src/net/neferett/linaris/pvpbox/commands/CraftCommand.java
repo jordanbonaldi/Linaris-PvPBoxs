@@ -5,7 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.neferett.linaris.pvpbox.events.players.PlayerManagers;
+import net.neferett.linaris.pvpbox.players.PlayerManagers;
 
 public class CraftCommand extends PlayerManagers implements CommandExecutor{
 

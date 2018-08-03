@@ -13,6 +13,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 import net.neferett.linaris.pvpbox.handlers.kits.KitsManager;
+import net.neferett.linaris.utils.CuboidRegion;
 import net.neferett.linaris.utils.ItemBuilder;
 
 public class ConfigReader {
@@ -69,9 +70,10 @@ public class ConfigReader {
 		for (int i = 1; i <= itemsnb; i++) {
 			tmp = new ItemBuilder(new ItemStack(this.configfile.getInt("kits.kit" + pos + ".Item." + i + ".id"),
 					this.configfile.getInt("kits.kit" + pos + ".Item." + i + ".nb")));
-			if (this.configfile.getInt("kits.kit" + pos + ".Item." + i + ".level") != 0) tmp.addEnchantment(
-					Enchantment.getById(this.configfile.getInt("kits.kit" + pos + ".Item." + i + ".enchantment")),
-					this.configfile.getInt("kits.kit" + pos + ".Item." + i + ".level"));
+			if (this.configfile.getInt("kits.kit" + pos + ".Item." + i + ".level") != 0)
+				tmp.addEnchantment(
+						Enchantment.getById(this.configfile.getInt("kits.kit" + pos + ".Item." + i + ".enchantment")),
+						this.configfile.getInt("kits.kit" + pos + ".Item." + i + ".level"));
 			items[i - 1] = tmp.build();
 		}
 		return items;
@@ -129,7 +131,15 @@ public class ConfigReader {
 		return this.getLocation("config.spawn");
 	}
 
+	public boolean isDefault() {
+		return this.configfile.getBoolean("config.default");
+	}
+
 	public boolean isMoney() {
 		return this.configfile.getBoolean("config.money");
+	}
+
+	public CuboidRegion SignClassementCuboid() {
+		return new CuboidRegion(this.getLocation("config.inside.signp1"), this.getLocation("config.inside.signp2"));
 	}
 }
