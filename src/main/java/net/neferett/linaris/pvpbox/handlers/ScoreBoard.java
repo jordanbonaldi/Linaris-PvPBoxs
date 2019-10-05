@@ -22,7 +22,7 @@ public class ScoreBoard extends ScoreBoardModule {
 	public ScoreBoard(final BukkitAPI game) {
 		super(game);
 
-		this.NAME = new RainbowEffect("UniverSeven", "§f§l", "§e§l", 40);
+		this.NAME = new RainbowEffect("BattleMine", "§f§l", "§e§l", 40);
 
 	}
 
@@ -80,7 +80,7 @@ public class ScoreBoard extends ScoreBoardModule {
 		lines.put(4, "§1");
 		lines.put(3, "§fLevel§f: §b" + pa.getLevel());
 		lines.put(2, "§f");
-		lines.put(1, "§eplay.universeven.fr");
+		lines.put(1, "§eplay.battlemine.fr");
 
 		if (lines.isEmpty())
 			return;
